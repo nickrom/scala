@@ -1,0 +1,87 @@
+import scala.util.matching.Regex
+import DomainTags ._
+
+/**
+  * Created by dalatar on 08.04.17.
+  */
+trait Idents extends Scanner{
+
+
+  private def findIdent (pos : Pos) : Pos = {
+    if(pos.ch == '*' && pos.col-1 == 0) {
+      findComment(pos.inc)
+    } else if ((pos.ch >= 'a' && pos.ch <= 'z') || pos.ch == '*') {
+      findIdent(pos.inc)
+    } else {
+      pos
+    }
+  }
+
+  private def findComment (pos : Pos) : Pos = {
+    if(pos.ch != '\n')
+      findComment(pos.inc)
+    else
+      pos
+  }
+
+
+  override def scan ( start : Pos ) = {
+    val follow =  findIdent(start)
+    //println("Follow is " + follow.col + " " + follow.line)
+    //println("Start is " + start.toString())
+    println(start.prog.substring(start.col-1,follow.col-1))
+    if ( start != follow && (start.prog.substring(start.col-1,follow.col-1).equals("with") || start.prog.substring(start.col-1,follow.col-1).equals("end") || start.prog.substring(start.col-1,follow.col-1).equals("**")) )
+      (KEYS,follow)
+    /*else if (start.prog.substring(start.col-1,follow.col-1).charAt(0) == '*')
+      (COMMENT,follow)*/
+    else if (start != follow)
+      (IDENT,follow)
+    else
+      super.scan (start)
+  }
+
+}
+
+
+import scala.util.matching.Regex
+import DomainTags ._
+
+/**
+  * Created by dalatar on 08.04.17.
+  */
+trait Idents extends Scanner{
+
+
+  private def findIdent (pos : Pos) : Pos = {
+    if (pos.ch == '*' && pos.col -1 == 0){
+      findComment(pos.inc)
+    }
+    else if ((pos.ch >= 'a' && pos.ch <= 'z') || pos.ch == '*') {
+      findIdent(pos.inc)
+    } else {
+      pos
+    }
+  }
+
+  private def findComment (pos : Pos) : Pos = {
+    if(pos.ch != '\n')
+      pos.inc
+    else
+      pos
+  }
+
+
+  override def scan ( start : Pos ) = {
+    val follow =  findIdent(start)
+    //println("Follow is " + follow.col + " " + follow.line)
+    //println("Start is " + start.toString())
+    //println(start.prog.substring(start.col-1,follow.col-1).length % 2 == 1)
+    if ( start != follow && (start.prog.substring(start.col-1,follow.col-1).equals("with") || start.prog.substring(start.col-1,follow.col-1).equals("end") || start.prog.substring(start.col-1,follow.col-1).equals("**")) )
+      (KEYS,follow)
+    else if (start != follow)
+      (IDENT,follow)
+    else
+      super.scan (start)
+  }
+
+}
